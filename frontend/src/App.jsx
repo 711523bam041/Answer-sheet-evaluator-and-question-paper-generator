@@ -11,7 +11,8 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Configure axios
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Use VITE_API_URL if specified, otherwise default to relative path in production or localhost in development
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
 const REQUEST_TIMEOUT = parseInt(import.meta.env.VITE_REQUEST_TIMEOUT || '30000');
 
 axios.defaults.baseURL = API_URL;
