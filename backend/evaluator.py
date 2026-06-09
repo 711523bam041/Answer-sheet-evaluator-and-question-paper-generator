@@ -13,7 +13,9 @@ warnings.filterwarnings('ignore')
 log = logging.getLogger(__name__)
 
 # Configure Tesseract path (Windows user installation)
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Ruthrayini\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+_tesseract_win_path = r"C:\Users\Ruthrayini\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+if os.path.exists(_tesseract_win_path):
+    pytesseract.pytesseract.tesseract_cmd = _tesseract_win_path
 
 # Cache for processed images to avoid re-processing
 _image_cache = {}
