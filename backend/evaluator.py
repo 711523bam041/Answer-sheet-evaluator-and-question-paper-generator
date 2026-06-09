@@ -289,6 +289,11 @@ def _calculate_plagiarism_pairs_optimized(student_texts, threshold=0.80, max_res
 
 def get_model():
     global model, model_error, try_load
+    if os.environ.get('DISABLE_SBERT', 'false').lower() == 'true':
+        try_load = False
+        model_error = "SBERT model disabled via environment variable"
+        return None
+        
     if model is None and try_load:
         try:
             log.info("Loading SBERT model: all-MiniLM-L6-v2")
