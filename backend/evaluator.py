@@ -805,9 +805,11 @@ def evaluate_answer_components(student_answer, max_marks, answer_key_details):
         if completeness_score < (max_marks * 0.1) * 0.8:
             reasons.append("Answer is too brief or incomplete.")
         if missing_keywords:
-            reasons.append(f"Important keywords not mentioned: {', '.join([f'\"{k}\"' for k in missing_keywords[:3]])}.")
+            kw_str = ", ".join([f'"{k}"' for k in missing_keywords[:3]])
+            reasons.append(f"Important keywords not mentioned: {kw_str}.")
         if missing_concepts:
-            reasons.append(f"Important concepts not covered: {', '.join([f'\"{c}\"' for c in missing_concepts[:2]])}.")
+            c_str = ", ".join([f'"{c}"' for c in missing_concepts[:2]])
+            reasons.append(f"Important concepts not covered: {c_str}.")
         if correctness_score < (max_marks * 0.4) * 0.75:
             reasons.append("Answer lacks accuracy or semantic correctness compared to the reference key.")
             
@@ -1339,10 +1341,11 @@ def evaluate_and_check_plagiarism(answerkey_path, answers_folder, paper_question
     for filename, text in student_texts.items():
         ai_score, detected_markers = _detect_ai_content(text)
         if ai_score >= 0.85:
+            markers_str = ", ".join([f'"{m}"' for m in detected_markers[:3]])
             ai_flags[filename] = {
                 "score": ai_score,
                 "markers": detected_markers,
-                "reason": f"AI-generated content confidence ({int(ai_score * 100)}%) exceeds threshold (85%). Matched markers: {', '.join([f'\"{m}\"' for m in detected_markers[:3]])}."
+                "reason": f"AI-generated content confidence ({int(ai_score * 100)}%) exceeds threshold (85%). Matched markers: {markers_str}."
             }
 
     # 5. Suspicious Answer Patterns Check (Self-Duplicates)
