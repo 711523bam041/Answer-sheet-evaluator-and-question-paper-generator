@@ -1,0 +1,8 @@
+Question 1: What is machine learning?
+Answer: Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It uses algorithms to analyze data and make predictions.
+
+Question 2: Explain supervised learning.
+Answer: Supervised learning is a machine learning approach where the algorithm learns from labeled training data. Each training example includes both input features and the correct output label, allowing the model to learn the mapping between inputs and outputs.
+
+Question 3: What is the difference between regression and classification?
+Answer: Regression is used to predict continuous numerical values, while classification is used to predict discrete categorical values. Regression models output a real number, whereas classification models output a class label or probability.

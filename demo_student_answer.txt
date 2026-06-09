@@ -1,0 +1,8 @@
+Question 1: What is machine learning?
+Answer: Machine learning is a type of artificial intelligence where computers can learn patterns from data and make decisions without being explicitly told how to do it. It uses statistical algorithms to identify trends in data.
+
+Question 2: Explain supervised learning.
+Answer: Supervised learning is when a machine learning model is trained with labeled examples. The training data has both the input and the correct output, so the algorithm learns to map inputs to outputs by example.
+
+Question 3: What is the difference between regression and classification?
+Answer: Regression predicts continuous numbers like house prices, while classification predicts categories like whether something is a cat or dog. These are two different types of prediction problems.
