@@ -13,9 +13,7 @@ warnings.filterwarnings('ignore')
 log = logging.getLogger(__name__)
 
 # Configure Tesseract path (Windows user installation)
-_tesseract_win_path = r"C:\Users\Ruthrayini\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
-if os.path.exists(_tesseract_win_path):
-    pytesseract.pytesseract.tesseract_cmd = _tesseract_win_path
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Ruthrayini\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 
 # Cache for processed images to avoid re-processing
 _image_cache = {}
@@ -289,11 +287,6 @@ def _calculate_plagiarism_pairs_optimized(student_texts, threshold=0.80, max_res
 
 def get_model():
     global model, model_error, try_load
-    if os.environ.get('DISABLE_SBERT', 'false').lower() == 'true':
-        try_load = False
-        model_error = "SBERT model disabled via environment variable"
-        return None
-        
     if model is None and try_load:
         try:
             log.info("Loading SBERT model: all-MiniLM-L6-v2")
@@ -812,11 +805,9 @@ def evaluate_answer_components(student_answer, max_marks, answer_key_details):
         if completeness_score < (max_marks * 0.1) * 0.8:
             reasons.append("Answer is too brief or incomplete.")
         if missing_keywords:
-            kw_list = [f'"{k}"' for k in missing_keywords[:3]]
-            reasons.append(f"Important keywords not mentioned: {', '.join(kw_list)}.")
+            reasons.append(f"Important keywords not mentioned: {', '.join([f'\"{k}\"' for k in missing_keywords[:3]])}.")
         if missing_concepts:
-            c_list = [f'"{c}"' for c in missing_concepts[:2]]
-            reasons.append(f"Important concepts not covered: {', '.join(c_list)}.")
+            reasons.append(f"Important concepts not covered: {', '.join([f'\"{c}\"' for c in missing_concepts[:2]])}.")
         if correctness_score < (max_marks * 0.4) * 0.75:
             reasons.append("Answer lacks accuracy or semantic correctness compared to the reference key.")
             
@@ -1348,11 +1339,10 @@ def evaluate_and_check_plagiarism(answerkey_path, answers_folder, paper_question
     for filename, text in student_texts.items():
         ai_score, detected_markers = _detect_ai_content(text)
         if ai_score >= 0.85:
-            markers_str = ', '.join([f'"{m}"' for m in detected_markers[:3]])
             ai_flags[filename] = {
                 "score": ai_score,
                 "markers": detected_markers,
-                "reason": f"AI-generated content confidence ({int(ai_score * 100)}%) exceeds threshold (85%). Matched markers: {markers_str}."
+                "reason": f"AI-generated content confidence ({int(ai_score * 100)}%) exceeds threshold (85%). Matched markers: {', '.join([f'\"{m}\"' for m in detected_markers[:3]])}."
             }
 
     # 5. Suspicious Answer Patterns Check (Self-Duplicates)

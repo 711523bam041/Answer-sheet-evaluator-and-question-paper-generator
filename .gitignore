@@ -1,61 +1,38 @@
-# Python virtual environments and caches
+# Environment variables
+.env
+*.env
+backend/.env
+frontend/.env
+
+# Python
+__pycache__/
+*.py[cod]
 venv/
 .venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# SQLite Databases & Local Storage
-instance/
+# Flask
 backend/instance/
-*.db
-*.db.bak
-*.sqlite3
+instance/
 
-# Uploads and temporary directories
+# Uploads
 uploads/
 backend/uploads/
+
+# Logs
 logs/
 backend/logs/
 *.log
 
-# Environments
-.env
-backend/.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Node.js
+# Node
 node_modules/
 frontend/node_modules/
-frontend/dist/
-.npm
-package-lock.json
 
-# IDE / OS Files
+# Frontend build
+dist/
+frontend/dist/
+
+# IDE / OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-desktop.ini

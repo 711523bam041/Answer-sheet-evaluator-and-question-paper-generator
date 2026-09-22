@@ -753,3 +753,62 @@ def generate_paper_pdf(paper_dict, include_answers=False):
     pdf.output(output)
     output.seek(0)
     return output.getvalue()
+
+
+def parse_paper_template(text_or_content):
+    """
+    Extracts sections, question counts, marks per section, and choices from custom pattern text or file text.
+    Example text:
+    Part A - 15 x 1 Mark
+    Part B - 10 x 2 Marks
+    Part C - 5 x 13 Marks
+    Returns structured dict or error if invalid/ambiguous.
+    """
+    if not text_or_content or not str(text_or_content).strip():
+        return {
+            'is_valid': False,
+            'error': 'Template text or file content is empty.'
+        }
+    
+    text = str(text_or_content).strip()
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    
+    sections = []
+    total_marks = 0
+    
+    for line in lines:
+        # Match count and marks: e.g., "15 x 1 Mark", "10 questions of 2 marks", "5 * 13"
+        match = re.search(r'(\d+)\s*(?:x|\*|questions?|q)?\s*(?:of)?\s*(\d+)\s*(?:marks?|m|pts|mark)?', line, re.IGNORECASE)
+        if match:
+            count = int(match.group(1))
+            marks = int(match.group(2))
+            if count > 0 and marks > 0:
+                sec_name = line.split('-')[0].split(':')[0].strip() if ('-' in line or ':' in line) else f"Section {len(sections)+1}"
+                sec_total = count * marks
+                sections.append({
+                    'name': sec_name,
+                    'count': count,
+                    'marks_per_question': marks,
+                    'total_section_marks': sec_total,
+                    'type': f"{marks}-mark"
+                })
+                total_marks += sec_total
+
+    if not sections:
+        return {
+            'is_valid': False,
+            'error': 'Could not detect valid question pattern from input. Use format like "Part A - 15 x 1 Mark, Part B - 10 x 2 Marks".'
+        }
+        
+    summary = ", ".join([f"{s['name']}: {s['count']} x {s['marks_per_question']}M = {s['total_section_marks']}M" for s in sections])
+    distribution = {str(s['marks_per_question']): s['count'] for s in sections}
+    
+    return {
+        'is_valid': True,
+        'sections': sections,
+        'distribution': distribution,
+        'total_marks': total_marks,
+        'summary': summary,
+        'detected_text': text[:500]
+    }
+
