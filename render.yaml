@@ -2,14 +2,21 @@ services:
   - type: web
     name: answer-evaluator
     env: python
+    plan: free
+
     buildCommand: cd frontend && npm install && npm run build && cd ../backend && pip install -r requirements.txt
+
     startCommand: gunicorn --chdir backend app:app
+
     envVars:
       - key: SECRET_KEY
         generateValue: true
+
       - key: JWT_SECRET_KEY
         generateValue: true
+
       - key: PYTHONPATH
         value: backend
+
       - key: DATABASE_URL
         value: sqlite:///app.db
