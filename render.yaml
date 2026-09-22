@@ -1,3 +1,7 @@
+databases:
+  - name: answer-evaluator-db
+    plan: free
+
 services:
   - type: web
     name: answer-evaluator
@@ -19,4 +23,6 @@ services:
         value: backend
 
       - key: DATABASE_URL
-        value: sqlite:///app.db
+        fromDatabase:
+          name: answer-evaluator-db
+          property: connectionString

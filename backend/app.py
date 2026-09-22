@@ -110,32 +110,36 @@ def admin_required():
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-@app.before_request
-def initialize_database():
-    """Initialize database and seed default admin user on startup."""
-    if not hasattr(app, 'db_initialized'):
-        try:
-            with app.app_context():
-                db.create_all()
-                # Seed default admin user if no admin exists
-                admin_user = User.query.filter_by(role='admin').first()
-                if not admin_user:
-                    hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-                    default_admin = User(
-                        username='admin',
-                        email='admin@evaluator.edu',
-                        password=hashed_pw,
-                        role='admin',
-                        is_active=True
-                    )
-                    db.session.add(default_admin)
-                    db.session.commit()
-                    log.info("Default admin user created: username='admin'")
+def seed_admin_user():
+    """Seed the default admin user if no admin exists."""
+    try:
+        admin_user = User.query.filter_by(role='admin').first()
+        if not admin_user:
+            hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
+            default_admin = User(
+                username='admin',
+                email='admin@evaluator.edu',
+                password=hashed_pw,
+                role='admin',
+                is_active=True
+            )
+            db.session.add(default_admin)
+            db.session.commit()
+            log.info("Default admin user created: username='admin', password='admin123'")
+        else:
+            log.info(f"Admin user already exists: {admin_user.username}")
+    except Exception as e:
+        log.error(f"Failed to seed admin user: {str(e)}", exc_info=True)
+        db.session.rollback()
 
-                app.db_initialized = True
-                log.info("Database initialized successfully")
-        except Exception as e:
-            log.error(f"Failed to initialize database: {str(e)}", exc_info=True)
+# Initialize DB tables and seed admin at app startup (called once per worker process)
+with app.app_context():
+    try:
+        db.create_all()
+        seed_admin_user()
+        log.info("Database initialized successfully")
+    except Exception as e:
+        log.error(f"Failed to initialize database: {str(e)}", exc_info=True)
 
 @app.route('/api/health', methods=['GET'])
 def health():
