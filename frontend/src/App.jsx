@@ -18,10 +18,14 @@ import AdminSystemRecords from './pages/AdminSystemRecords';
 import Layout from './components/Layout';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const REQUEST_TIMEOUT = parseInt(import.meta.env.VITE_REQUEST_TIMEOUT || '30000');
+// Only set baseURL when explicitly configured (e.g., local dev with separate backend).
+// In production (Render), frontend and backend share the same domain, so relative /api/* paths work.
+const API_URL = import.meta.env.VITE_API_URL;
+const REQUEST_TIMEOUT = parseInt(import.meta.env.VITE_REQUEST_TIMEOUT || '300000');
 
-axios.defaults.baseURL = API_URL;
+if (API_URL && !API_URL.includes('localhost')) {
+  axios.defaults.baseURL = API_URL;
+}
 axios.defaults.timeout = REQUEST_TIMEOUT;
 
 axios.interceptors.request.use(

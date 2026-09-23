@@ -27,7 +27,7 @@ from validators import validate_file, validate_student_data
 from logger import setup_logging
 from config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, KEEP_UPLOADED_FILES
 
-app = Flask(__name__, static_folder='../frontend/dist', static_url_path='/')
+app = Flask(__name__, static_folder='../frontend/dist', static_url_path=None)
 CORS(app, supports_credentials=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
@@ -1316,13 +1316,24 @@ def get_flagged_report_route():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
+    # Never treat API requests as frontend routes
     if path.startswith('api/'):
-        return jsonify({'message': 'Endpoint not found', 'error': 'not_found'}), 404
-        
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
-        
-    return send_from_directory(app.static_folder, 'index.html')
+        return jsonify({
+            'message': 'Endpoint not found',
+            'error': 'not_found'
+        }), 404
+
+    frontend_folder = app.static_folder
+
+    # Serve actual frontend files such as assets/*.js and assets/*.css
+    requested_file = os.path.join(frontend_folder, path)
+
+    if path and os.path.isfile(requested_file):
+        return send_from_directory(frontend_folder, path)
+
+    # React Router routes such as /login, /register,
+    # /dashboard, /admin, /profile etc.
+    return send_from_directory(frontend_folder, 'index.html')
 
 @app.errorhandler(404)
 def not_found(error):
